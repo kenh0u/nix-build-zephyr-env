@@ -15,7 +15,7 @@ let
     outputHashAlgo = "sha256";
     outputHash = zephyrHash;
     
-    nativeBuildInputs = [ pkgs.git pkgs.python3Packages.west pkgs.cacert pkgs.wget pkgs.python3 ];
+    nativeBuildInputs = [ pkgs.git (pkgs.python3.withPackages (ps: [ ps.west ps.requests ps.jsonschema ])) pkgs.cacert pkgs.wget ];
     
     phases = [ "buildPhase" ];
     buildPhase = ''
@@ -46,7 +46,7 @@ pkgs.mkShell {
           exec west "$@"
         ' _ "$@"
       else
-        exec ${pkgs.python3Packages.west}/bin/west "$@"
+        exec ${(pkgs.python3.withPackages (ps: [ ps.west ps.requests ps.jsonschema ]))}/bin/west "$@"
       fi
     '')
   ];
