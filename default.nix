@@ -22,9 +22,19 @@ let
       export HOME=$TMPDIR
       mkdir -p $out
       cd $out
-      west init -m https://github.com/zephyrproject-rtos/zephyr --mr ${zephyrVersion}
+      # west init --mr does not accept a raw commit SHA (it passes it to
+      # `git clone --branch`, which only understands refs), so clone the
+      # manifest repository ourselves and pin it to the exact revision
+      # (tag, branch, or 40-char SHA) before handing it to west.
+      git init zephyr
+      cd zephyr
+      git remote add origin https://github.com/zephyrproject-rtos/zephyr
+      git fetch --depth 1 origin ${zephyrVersion}
+      git checkout FETCH_HEAD
+      cd ..
+      west init -l zephyr
       west update
-      
+
       # Fetch requested blobs
       for blob in ${pkgs.lib.escapeShellArgs zephyrBlobs}; do
         west blobs fetch "$blob"
