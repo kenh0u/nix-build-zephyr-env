@@ -6,14 +6,12 @@
     nix-build-oci-env.url = "github:kenh0u/nix-build-oci-env";
   };
 
-  outputs = { self, nixpkgs, nix-build-oci-env }: let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs { inherit system; };
-    buildOCIEnv = nix-build-oci-env.lib.${system}.buildOCIEnv;
-    buildZephyrEnv = import ./default.nix { inherit pkgs buildOCIEnv; };
-  in {
-    lib.${system} = {
-      inherit buildZephyrEnv;
+  outputs = { self, nixpkgs, nix-build-oci-env }: {
+    lib = {
+      buildZephyrEnv = { pkgs }: import ./default.nix {
+        inherit pkgs;
+        buildOCIEnv = nix-build-oci-env.lib.buildOCIEnv { inherit pkgs; };
+      };
     };
   };
 }

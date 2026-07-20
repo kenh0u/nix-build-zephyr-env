@@ -43,6 +43,9 @@ pkgs.mkShell {
     (pkgs.writeShellScriptBin "west" ''
       if [ -z "$IN_OCI_SHELL" ]; then
         exec oci-shell /bin/sh -c '
+          export PATH=/opt/python/venv/bin:$PATH
+          export ZEPHYR_TOOLCHAIN_VARIANT=zephyr
+          export ZEPHYR_SDK_INSTALL_DIR=$(ls -d /opt/toolchains/zephyr-sdk-* 2>/dev/null | head -n1)
           exec west "$@"
         ' _ "$@"
       else
@@ -50,8 +53,7 @@ pkgs.mkShell {
       fi
     '')
   ];
-  
+
   ZEPHYR_BASE = "${zephyrSource}/zephyr";
-  # The Docker image zephyrprojectrtos/zephyr-build has SDK in /opt/toolchains/zephyr-sdk-*
   ZEPHYR_TOOLCHAIN_VARIANT = "zephyr";
 }
