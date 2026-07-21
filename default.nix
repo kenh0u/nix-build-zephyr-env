@@ -1,5 +1,5 @@
 { pkgs, buildOCIEnv }:
-{ zephyrVersion, zephyrHash, zephyrBlobs ? [], toolchainImageName, toolchainDigest, toolchainSha256 }:
+{ zephyrVersion, zephyrHash, zephyrBlobs ? [], extraWestModules ? [], toolchainImageName, toolchainDigest, toolchainSha256 }:
 
 let
   ociEnv = buildOCIEnv {
@@ -33,6 +33,13 @@ let
       git checkout FETCH_HEAD
       cd ..
       west init -l zephyr
+
+      # Inject extra west modules (e.g. wolfssl, wolfssh) into the manifest
+      # before running west update so they are fetched deterministically.
+      ${pkgs.lib.optionalString (extraWestModules != []) ''
+        python3 ${./inject-modules.py} zephyr/west.yml '${builtins.toJSON extraWestModules}'
+      ''}
+
       west update
 
       # Fetch requested blobs
