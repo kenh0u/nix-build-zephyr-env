@@ -15,7 +15,7 @@ let
     outputHashAlgo = "sha256";
     outputHash = zephyrHash;
     
-    nativeBuildInputs = [ pkgs.git (pkgs.python3.withPackages (ps: [ ps.west ps.requests ps.jsonschema ])) pkgs.cacert pkgs.wget ];
+    nativeBuildInputs = [ pkgs.git (pkgs.python3.withPackages (ps: [ ps.west ps.requests ps.jsonschema ps.pyyaml ])) pkgs.cacert pkgs.wget ];
     
     phases = [ "buildPhase" ];
     buildPhase = ''
