@@ -42,6 +42,10 @@ let
 
       west config zephyr.base zephyr
       find . -name ".git" -type d -exec rm -rf {} + || true
+      # west blobs fetch imports zephyr's python helpers on the fly, leaving
+      # __pycache__/*.pyc files whose embedded source-mtime makes the FOD
+      # hash non-reproducible. Drop them; cmake regenerates any it needs.
+      find . -type d -name "__pycache__" -exec rm -rf {} + || true
       find . -type f -name "*.cmake" -exec sed -i -e 's/''${ABSOLUTE_GIT_DIR}\/index//g' -e 's/''${ABSOLUTE_GIT_DIR}//g' -e 's/''${ZEPHYR_BASE}\/.git//g' {} + || true
 
       # Determinize mtimes and directory entry order so the FOD hash is
